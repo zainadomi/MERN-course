@@ -1,21 +1,27 @@
-import { RequestHandler } from "express";
+import { NextFunction, RequestHandler, Response } from "express";
 import createHttpError from "http-errors";
 import UserModel from '../models/user';
 import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
+import { UserRequest } from "../../types";
+import env from '../util/validateEnv';
+
 
 // Get authenticated user 
 
-export const getAuthenticatedUser: RequestHandler = async (req,res,next) =>{
+    export const getAuthenticatedUser:any = async (req:UserRequest,res:Response,next:NextFunction) =>{
 
-    try {
+        // const userId = req.userId ;
 
-        const user = await UserModel.findById( req.session.userId).select('+email').exec();
-        res.status(200).json(user);
-        
-    } catch (error) {
-        next(error)
-        
-    }
+        try {
+
+            const user = await UserModel.findById(req?.userId).select('+email').exec();
+            res.json(user);
+            
+        } catch (error) {
+            next(error)
+            
+        }
 }
 // Sign up function
 
@@ -57,8 +63,6 @@ export const signUp: RequestHandler<unknown, unknown, SignUpBody, unknown> = asy
             password: passwordHashed,
         });
 
-        req.session.userId = newUser._id
-
         res.status(201).json(newUser);
         
 
@@ -95,26 +99,49 @@ export const login: RequestHandler<unknown, unknown, LoginBody, unknown> =async 
         if(!passwordMatch){
             throw createHttpError(401, 'Invalid credentials')
         }
-        req.session.userId = user._id;
-        res.status(201).json(user);
-        
-    } catch (error) {
-        next(error)
-        
-    }
+
+        if(passwordMatch){
+            const token = jwt.sign(
+                {
+                    _id:user._id,
+                    username:req.body.username,
+
+                },
+                env.JWT_SECRET
+                // 'Domi412&9630'
+
+            );
+
+            res.json({ status: "ok", token: token, user: user });
+        }} catch (error) {
+            next(error)
+            
+        }
     
 }
 
 // Logout   
 
-export const logout: RequestHandler = async (req, res, next) =>{
-    req.session.destroy(error=>{
-        if(error){
-            next(error);
-        }else{
-            res.sendStatus(200);
-        }
-    })
-};
+// export const logout: RequestHandler = async (req, res, next) =>{
+    
+//    // session field :
+
+//     req.session.destroy(error=>{
+//         if(error){
+//             next(error);
+//         }else{
+//             res.sendStatus(200);
+//         }
+//     })
+
+export const logout: RequestHandler = async (req, res, next) => {
+    try {
+      // Clear the JWT token from the client-side by setting it to an empty string.
+      res.cookie("jwt", "", { maxAge: 0 });
+      res.sendStatus(200);
+    } catch (error) {
+      next(error);
+    }
+  };
 
 

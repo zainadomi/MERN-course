@@ -1,17 +1,18 @@
 import express from 'express';
+import { verifyToken } from '../controllers/jwt/jwtAuth';
 import * as NotesController from '../controllers/notes'
 
 const router = express.Router(); 
 
-router.get('/', NotesController.getNotes);
+router.get('/',verifyToken, NotesController.getNotes);
 
-router.get('/:noteId', NotesController.getNote);
+router.get('/:noteId',verifyToken, NotesController.getNote);
 
-router.post('/', NotesController.createNotes);
+router.post('/',verifyToken, NotesController.createNotes);
 
 router.patch('/:noteId', NotesController.updateNote)
 
-router.delete('/:noteId', NotesController.deleteNote)
+router.delete('/:noteId',verifyToken, NotesController.deleteNote)
 
 
 export default router;

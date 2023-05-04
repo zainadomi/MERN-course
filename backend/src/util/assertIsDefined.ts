@@ -3,4 +3,4 @@ export function assertIsDefined<T> (val:T):asserts val is NonNullable<T>{
         throw Error("Expected 'val' to be defined, but recieved" + val);
     }
 
-}   //Generic Type
+}   //Generic Type, it can operate on any type

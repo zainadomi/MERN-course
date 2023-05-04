@@ -1,17 +1,19 @@
-import { RequestHandler, text } from "express";
+import { NextFunction, RequestHandler, Response, text } from "express";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
-import NoteModel from '../models/node'
+import { UserRequest } from "../../types";
+import NoteModel from '../models/note'
 import { assertIsDefined } from "../util/assertIsDefined";
 
 
 // Get all notes
-export const getNotes: RequestHandler = async (req,res,next) =>{
+export const getNotes: any = async (req:UserRequest,res:Response,next:NextFunction) =>{
 
-    const authenticatedUserId = req.session.userId;
+    const authenticatedUserId = req.userId;
 
     try{
         
+       // assertIsDefined(authenticatedUserId);
         assertIsDefined(authenticatedUserId);
         const notes = await NoteModel.find({userId:authenticatedUserId}).exec();
         res.status(200).json(notes);
@@ -23,11 +25,11 @@ export const getNotes: RequestHandler = async (req,res,next) =>{
 
 // Get single note
 
-export const getNote: RequestHandler = async (req,res,next) => {
-    const noteId = req.params.noteId;
-    const authenticatedUserId = req.session.userId;
+export const getNote: any = async (req:UserRequest,res:Response,next:NextFunction) => {
 
-    
+    const noteId = req.params.noteId;
+    const authenticatedUserId = req.userId;
+
 
     try{
 
@@ -52,15 +54,12 @@ export const getNote: RequestHandler = async (req,res,next) => {
      
     }
 };
-// Create note
-interface CreateNoteBody{
-    title?: string,
-    text?: string,
-}
-export const createNotes: RequestHandler<unknown,unknown,CreateNoteBody,unknown> = async (req,res,next) => {
+//Create note
+
+export const createNotes:any = async (req:UserRequest,res:Response,next:NextFunction) => {
     const title = req.body.title;
     const text = req.body.text;
-    const authenticatedUserId = req.session.userId;
+    const authenticatedUserId = req.userId; // what should I put instead of this
 
     try{
 
@@ -77,6 +76,7 @@ export const createNotes: RequestHandler<unknown,unknown,CreateNoteBody,unknown>
         });
 
         res.status(201).json(newNote); 
+
     }catch(error){
         next(error);
     }
@@ -93,11 +93,11 @@ interface UpdateNoteBody{
     text?: string,
 }
 
-export const updateNote: RequestHandler<UpdateNoteParams, unknown, UpdateNoteBody, unknown>=async (req,res,next) => {
+export const updateNote:any=async (req:UserRequest,res:Response,next:NextFunction) => {
     const noteId = req.params.noteId;
     const newTitle = req.body.title;
     const newText = req.body.text;
-    const authenticatedUserId = req.session.userId;
+    const authenticatedUserId = req.userId;
 
     
     try{
@@ -137,16 +137,14 @@ export const updateNote: RequestHandler<UpdateNoteParams, unknown, UpdateNoteBod
 
 // Delete note
 
-export const deleteNote: RequestHandler = async (req,res,next) => {
+export const deleteNote: any = async (req:UserRequest,res:Response,next:NextFunction) => {
     const noteId = req.params.noteId;
-    const authenticatedUserId = req.session.userId;
+    const authenticatedUserId = req.userId;
 
 
     try{
 
-        assertIsDefined(authenticatedUserId);
-
-
+        assertIsDefined(authenticatedUserId)
         if(!mongoose.isValidObjectId(noteId)){
             throw createHttpError(400,'Invalid note id');
         }
