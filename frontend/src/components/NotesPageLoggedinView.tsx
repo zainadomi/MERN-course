@@ -19,21 +19,21 @@ const NotesPageLoggedinView = () => {
     const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
     const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
 
+  const loadNotes=async()=> {
 
-  useEffect(() => {
-    async function loadNotes() {
-      try {
-        setShowNotesLoadingError(false);
-        setNotesLoading(true);
-        const notes = await NotesApi.fetchNotes();
-        setNotes(notes);
-      } catch (error) {
-        console.error(error);
-        setShowNotesLoadingError(true);
-      } finally {
-        setNotesLoading(false);
-      }
+    try {
+      setShowNotesLoadingError(false);
+      setNotesLoading(true);
+      const notes = await NotesApi.fetchNotes();
+      setNotes(notes);
+    } catch (error) {
+      console.error(error);
+      setShowNotesLoadingError(true);
+    } finally {
+      setNotesLoading(false);
     }
+  }
+  useEffect(() => {
     loadNotes();
   }, []);
 
@@ -72,7 +72,9 @@ const NotesPageLoggedinView = () => {
         Add new note
       </Button>
       {notesLodading && <Spinner  animation='border' variant='primary' />}
+
       {showNotesLoadingError &&  <p>Something went wrong. Please refresh the page.</p>}
+
       {!notesLodading && !showNotesLoadingError && 
       <>
         {

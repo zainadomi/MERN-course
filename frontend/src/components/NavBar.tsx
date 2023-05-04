@@ -1,16 +1,15 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { User } from "../models/user";
 import NavBarLoggedoutView from "./NavBarLoggedoutView";
-import NavBarLoggedInView from "./NavBarLoggesInView";
+import NavBarLoggedInView from "./NavBarLoggedInView";
 import { Link } from "react-router-dom";
 
 interface NavBarProps{
+
     loggedInUser: User | null,
     onSignUpClicked: ()=> void,
     onLoginClicked: ()=> void,
     onLogoutSuccesful : ()=> void,
-
-
 
 }
 

@@ -14,23 +14,28 @@ import styles from './styles/App.module.css'
 // shift + alt + o ==> Remove all unused imports
 
 function App() {
+
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
   const [showSignUpModel, setShowSignUpModel] = useState(false);
   const [showLoginModel, setShowLoginUpModel] = useState(false);
 
-  useEffect(() => {
-    async function fetchLoggedInUser() {
-      try {
-        const user = await NotesApi.getLoggedInUser();
-        setLoggedInUser(user);
-      } catch (error) {
-        console.error(error);
-      }
+  const fetchLoggedInUser = async ()=> {
+
+    try {
+      const user = await NotesApi.getLoggedInUser();
+      setLoggedInUser(user);
+    } catch (error) {
+      console.error(error);
     }
+  }
+
+  useEffect(() => {
+    fetchLoggedInUser();
   }, []);
 
   return (
     <BrowserRouter>
+
       <div>
         <NavBar
           loggedInUser={loggedInUser}

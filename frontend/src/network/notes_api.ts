@@ -28,8 +28,14 @@ async function fetchData(input: RequestInfo, init?: RequestInit){
 }
 
 export async function fetchNotes(): Promise<Note[]>{
+    const token = localStorage.getItem("token");
+    
     const response = await fetchData("api/notes",{
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            "Authorization": `Bearer ${token}`, 
+         // "Content-Type": "application/json",
+        },
       });
       return response.json();
 
@@ -38,10 +44,17 @@ export async function fetchNotes(): Promise<Note[]>{
 // Get logged in user
 
 export async function getLoggedInUser():Promise<User>{
+
+    const token = localStorage.getItem("token");
     const response = await fetchData('/api/users',
     {
-        method:'GET'
+        method:'GET',
+        headers: {
+            "Authorization": `Bearer ${token}`, 
+            // "Content-Type": "application/json",
+        },
     });
+    
     return response.json();
 
 }
@@ -76,27 +89,46 @@ export async function signup(credentials: SignupCredentials): Promise<User> {
  }
 
  export async function login(credentials: LoginCredentials):Promise<User>{
-        const response = await fetchData('/api/users/login',{
+        const response = await fetchData('/api/users/login', {
             method:'POST',
             headers: {
                 "Content-Type": "application/json", 
+
             },
             body: JSON.stringify(credentials),
         });
 
-        return response.json();
+        const data = await response.json();
+
+        console.log(data);
+    
+        if (data.token) {
+
+          localStorage.setItem("token", data.token);
+          alert(`Login Successful, the user now is: ${credentials.username}`);
+          console.log("--------------------");
+          console.log(localStorage.getItem("token"));
+        
+        } else {
+          alert("Please check your email and password");
+        }
+
+        return data;
+     
+
  }
 
  // Logout 
 
  export async function logout(){
+
+    localStorage.clear();
+    
     await fetchData('/api/users/logout',{
         method:'POST',
+    
     });
  }
-
-
-
 
 // Create note api 
 
@@ -106,14 +138,18 @@ export interface NoteInput {
 }
 
 export async function createNote(note: NoteInput): Promise<Note>{
+    const token = localStorage.getItem("token");
     const response = await fetchData('api/notes',
     {
         method: 'POST',
-        headers: {
-            "Content-Type": "application/json", 
+        headers:{
+            
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`, 
         },
         body: JSON.stringify(note),
     });
+
     return response.json();
 
 }
@@ -121,12 +157,16 @@ export async function createNote(note: NoteInput): Promise<Note>{
 // Update note api
 
 export async function updateNote(noteId: string,note:NoteInput):Promise<Note>{
+    const usertoken = localStorage.getItem("token");
+    const  myHeaders = new Headers();
+
+    myHeaders.append("Authorization", `Bearer ${usertoken}`);
+    myHeaders.append("Content-Type", "application/json");
+
     const response = await fetchData('api/notes/' + noteId,
     {
         method: 'PATCH',
-        headers: {
-            "Content-Type": "application/json", 
-        },
+        headers:myHeaders,
         body: JSON.stringify(note),
     });
 
@@ -136,9 +176,16 @@ export async function updateNote(noteId: string,note:NoteInput):Promise<Note>{
 // Delete note api 
 
 export async function deleteNote(noteId: string){
+    const usertoken = localStorage.getItem("token");
+    const  myHeaders = new Headers();
+
+    myHeaders.append("Authorization", `Bearer ${usertoken}`);
+    myHeaders.append("Content-Type", "application/json");
+
     await fetchData('api/notes/' + noteId,
     {
         method: 'DELETE',
+        headers:myHeaders,
 
     });
 }

@@ -16,11 +16,7 @@ interface LoginModalProps {
 const LogInModal = ({ onDismiss, onLoginSuccsessful }: LoginModalProps) => {
   const [errorText, setErrorText] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginCredentials>();
+  const {register,handleSubmit,formState: { errors, isSubmitting }} = useForm<LoginCredentials>();
 
   async function onSubmit(credentials: LoginCredentials) {
    
@@ -89,5 +85,8 @@ const LogInModal = ({ onDismiss, onLoginSuccsessful }: LoginModalProps) => {
     </Modal>
   );
 };
+
+
+// 
 
 export default LogInModal;
