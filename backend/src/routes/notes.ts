@@ -10,7 +10,7 @@ router.get('/:noteId',verifyToken, NotesController.getNote);
 
 router.post('/',verifyToken, NotesController.createNotes);
 
-router.patch('/:noteId', NotesController.updateNote)
+router.patch('/:noteId',verifyToken, NotesController.updateNote)
 
 router.delete('/:noteId',verifyToken, NotesController.deleteNote)
 

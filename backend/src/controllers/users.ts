@@ -9,12 +9,8 @@ import env from '../util/validateEnv';
 
 // Get authenticated user 
 
-    export const getAuthenticatedUser:any = async (req:UserRequest,res:Response,next:NextFunction) =>{
-
-        // const userId = req.userId ;
-
+export const getAuthenticatedUser:any = async (req:UserRequest,res:Response,next:NextFunction) =>{
         try {
-
             const user = await UserModel.findById(req?.userId).select('+email').exec();
             res.json(user);
             
@@ -120,20 +116,7 @@ export const login: RequestHandler<unknown, unknown, LoginBody, unknown> =async 
     
 }
 
-// Logout   
-
-// export const logout: RequestHandler = async (req, res, next) =>{
-    
-//    // session field :
-
-//     req.session.destroy(error=>{
-//         if(error){
-//             next(error);
-//         }else{
-//             res.sendStatus(200);
-//         }
-//     })
-
+// logout function
 export const logout: RequestHandler = async (req, res, next) => {
     try {
       // Clear the JWT token from the client-side by setting it to an empty string.
